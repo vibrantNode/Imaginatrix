@@ -1,0 +1,22 @@
+# Build output directories
+/out
+out 
+out/
+# Executable files
+*.exe
+
+# Static libraries
+*.lib
+
+# Visual Studio directories
+.vs
+/.vs
+.vs/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+
