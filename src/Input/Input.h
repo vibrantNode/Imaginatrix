@@ -13,13 +13,7 @@ namespace Input {
 	bool KeyDown(unsigned int keycode);
 	float GetMouseOffsetX();
 	float GetMouseOffsetY();
-	bool LeftMouseDown();
-	bool RightMouseDown();
-	bool LeftMousePressed();
-	bool RightMousePressed();
-	bool MouseWheelUp();
-	bool MouseWheelDown();
-	int GetMouseWheelValue();
+	
 	int GetMouseX();
 	int GetMouseY();
 	void PreventRightMouseHold();

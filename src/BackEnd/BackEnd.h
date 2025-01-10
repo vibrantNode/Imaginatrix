@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Common.h"
+#include "IMCommon/Common.h"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <string>
@@ -19,13 +19,26 @@ namespace BackEnd {
 	const API GetAPI();
 
 	// Window
-	GLFWwindow* GetWindowedPointer();
+	GLFWwindow* GetWindowPointer();
 	void CreateGLFWWindow(const WindowedMode& windowedMode);
 	bool WindowIsOpen();
 	void SetWindowIcon(GLFWwindow* window, const std::string& iconPath);
 	void ToggleFullscreen();
 	void SetWindowedMode(const WindowedMode& windowedMode);
+	void ForceCloseWindow();
+	bool WindowHasFocus();
+	bool WindowHasNotBeenForceClosed();
+	int GetWindowedWidth();
 
+	int GetWindowedHeight();
+
+	int GetFullScreenWidth();
+
+	int GetFullScreenHeight();
+
+	int GetCurrentWindowWidth();
+
+	int GetCurrentWindowHeight();
 
 
 

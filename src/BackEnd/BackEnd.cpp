@@ -1,4 +1,6 @@
 #include "BackEnd.h"
+#include "API/OpenGL/OGLBackEnd.h"
+#include "API/OpenGL/OGLRenderer.h"
 #include "Input/Input.h"
 #include <iostream>
 #include <string>
@@ -36,10 +38,12 @@ namespace BackEnd {
 		_api = api;
 
 
-		int width = 800;
-		int height = 600;
+		int width = 1000;
+		int height = 1000;
 
 		glfwInit();
+		glfwSetErrorCallback([](int error, const char* description) { std::cout << "GLFW Error (" << std::to_string(error) << "): " << description << "\n"; });
+
 
 		if (GetAPI() == API::OPENGL) {
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -51,7 +55,8 @@ namespace BackEnd {
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
 		}
-
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
 
 		// Resolution and window size
 		_monitor = glfwGetPrimaryMonitor();
@@ -66,31 +71,35 @@ namespace BackEnd {
 		_windowedHeight = height;
 
 		CreateGLFWWindow(WindowedMode::WINDOWED);
-		if (_window == NULL) {
-			std::cout << "Failed to create GLFW window/n";
-			glfwTerminate();
-			return;
-		}
+	
 		glfwSetFramebufferSizeCallback(_window, framebuffer_size_callback);
 		glfwSetWindowFocusCallback(_window, window_focus_callback);
-
+		
 		SetWindowIcon(_window, "C:/Users/Admin/OneDrive/Desktop/RealTimeRendering/Imaginatrix/res/textures/awesomeface.png");
 
+		if (GetAPI() == API::OPENGL) {
+			glfwMakeContextCurrent(_window);
+			OGLBackEnd::Init();
+			glViewport(0, 0, width, height);
+		}
 
 		// Init sub systems
 		
 		Input::Init();
 		
 
-		//glfwShowWindow(BackEnd::GetWindowPointer());
+		glfwShowWindow(BackEnd::GetWindowPointer());
+	
+		OGLRenderer::LoadShaders();
 	}
 
 	void BeginFrame() {
+		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
+	
 	}
 
 	void EndFrame() {
-
 		// OpenGL
 		if (GetAPI() == API::OPENGL) {
 			glfwSwapBuffers(_window);
@@ -99,10 +108,11 @@ namespace BackEnd {
 		else if (GetAPI() == API::VULKAN) {
 
 		}
+
 	}
 
 	void UpdateSubSystems() {
-		//Input::Update();
+		Input::Update();
 		//Audio::Update();
 		//Scene::Update();
 	}
@@ -126,6 +136,11 @@ namespace BackEnd {
 			_window = glfwCreateWindow(_fullscreenWidth, _fullscreenHeight, "Imaginatrix", _monitor, NULL);
 		}
 		_windowedMode = windowedMode;
+
+		// Show the window immediately after creation
+		if (_window) {
+			glfwShowWindow(_window);
+		}
 	}
 
 	void SetWindowIcon(GLFWwindow* window, const std::string& iconPath) {
@@ -176,11 +191,11 @@ namespace BackEnd {
 		if (GetAPI() == API::OPENGL) {
 			//OpenGLBackEnd::HandleFrameBufferResized();
 		}
-		else {
-			//VulkanBackEnd::HandleFrameBufferResized();
-		}
+
 	}
 
+
+	
 
 	void SetAPI(API api) {
 		_api = api;
@@ -198,11 +213,41 @@ namespace BackEnd {
 	bool WindowIsOpen() {
 		return !(glfwWindowShouldClose(_window) || _forceCloseWindow);
 	}
+	void ForceCloseWindow() {
+		_forceCloseWindow = true;
+	}
+	bool WindowHasFocus() {
+		return _windowHasFocus;
+	}
+	bool WindowHasNotBeenForceClosed() {
+		return !_forceCloseWindow;
+	}
+	int GetWindowedWidth() {
+		return _windowedWidth;
+	}
 
+	int GetWindowedHeight() {
+		return _windowedHeight;
+	}
 
+	int GetFullScreenWidth() {
+		return _fullscreenWidth;
+	}
+
+	int GetFullScreenHeight() {
+		return _fullscreenHeight;
+	}
+
+	int GetCurrentWindowWidth() {
+		return _currentWindowWidth;
+	}
+
+	int GetCurrentWindowHeight() {
+		return _currentWindowHeight;
+	}
 	void framebuffer_size_callback(GLFWwindow* /*window*/, int width, int height) {
 		if (GetAPI() == API::OPENGL) {
-
+			glViewport(0, 0, width, height);
 		}
 		else {
 			//VulkanBackEnd::MarkFrameBufferAsResized();

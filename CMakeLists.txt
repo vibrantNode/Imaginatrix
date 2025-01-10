@@ -20,12 +20,30 @@ find_package(OpenGL REQUIRED)
 set(PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 add_executable(Continuum
-#source
+	
+	# Application core
 	src/main.cpp
 	src/Engine.cpp
-	
+
+	# Back end
 	src/BackEnd/BackEnd.cpp 
 
+	# API
+	src/API/OpenGL/OGLBackEnd.cpp 
+	src/API/OpenGL/OGLRenderer.cpp
+
+	src/API/OpenGL/Types/GL_Shader.cpp
+
+	# Renderer
+	src/Renderer/Renderer.cpp
+	src/Renderer/RenderData.cpp 
+
+	src/Renderer/Types/VertexBuffer.cpp 
+
+	# Core
+	src/Core/AssetManager.cpp
+
+	# Input
 	src/Input/Input.cpp
 
 )

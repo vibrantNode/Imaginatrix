@@ -1,0 +1,6 @@
+
+
+
+For now i am keeping the load shader call in the BackEnd::Init function until a better place is known
+
+
