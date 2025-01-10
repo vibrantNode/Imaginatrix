@@ -3,8 +3,16 @@
 #include "Renderer/Types/Mesh.h"
 #include "Core/AssetManager.h"
 #include "Types/GL_Shader.h"
+#include "Types/GL_Texture.h"
 #include <iostream>
 
+
+/*
+TASK LIST
+
+ 
+
+*/
 
 namespace OGLRenderer {
 
@@ -13,11 +21,24 @@ namespace OGLRenderer {
 		Shader _defaultShader;
 
 	}g_shaders;
+
+
+}
+
+void OGLRenderer::Init() {
+    AssetManager::LoadTextures();
+    LoadShaders();
 }
 
 void OGLRenderer::Render() {
 
     g_shaders._defaultShader.Bind();
+
+    // Bind the first texture in the AssetManager's texture list (example)
+    if (!AssetManager::g_textures.empty()) {
+        AssetManager::g_textures[1].Bind(1); // Bind the first texture to slot 1
+    }
+
 
     glBindVertexArray(OGLBackEnd::GetVertexDataVAO());
 
@@ -34,7 +55,7 @@ void OGLRenderer::Render() {
         );
     }
     else {
-        std::cerr << "Mesh not found at index 1!" << std::endl;
+        std::cerr << "Mesh not found at index!" << std::endl;
     }
 
     glBindVertexArray(0);

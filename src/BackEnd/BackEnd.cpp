@@ -83,14 +83,20 @@ namespace BackEnd {
 			glViewport(0, 0, width, height);
 		}
 
-		// Init sub systems
-		
-		Input::Init();
-		
-
 		glfwShowWindow(BackEnd::GetWindowPointer());
+
+		// Init sub systems
+
+		Input::Init();
+
+		// Init API specific
 	
-		OGLRenderer::LoadShaders();
+		if (GetAPI() == API::OPENGL) {
+			OGLRenderer::Init();
+			
+		}
+		
+		
 	}
 
 	void BeginFrame() {

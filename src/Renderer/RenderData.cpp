@@ -16,11 +16,13 @@ void RenderData::PopluateDummyMesh() {
 
     // Define a simple quad
     std::vector<Vertex> quadVertices = {
-        Vertex({-1.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}),
-        Vertex({-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
-        Vertex({1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}),
-        Vertex({1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f})
+        Vertex({-1.0f,  1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}), // Top-left
+        Vertex({-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}), // Bottom-left
+        Vertex({ 1.0f, -1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}), // Bottom-right
+        Vertex({ 1.0f,  1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f})  // Top-right
     };
+
+
 
     std::vector<uint32_t> quadIndices = { 0, 1, 2, 2, 3, 0 };
 

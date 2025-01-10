@@ -33,6 +33,8 @@ add_executable(Continuum
 	src/API/OpenGL/OGLRenderer.cpp
 
 	src/API/OpenGL/Types/GL_Shader.cpp
+	src/API/OpenGL/Types/GL_Texture.cpp
+
 
 	# Renderer
 	src/Renderer/Renderer.cpp

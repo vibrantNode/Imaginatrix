@@ -14,6 +14,12 @@ void Engine::run() {
 		BackEnd::BeginFrame();
 		BackEnd::UpdateSubSystems();
 
+		// Load assets
+		if (!AssetManager::LoadingComplete()) {
+			AssetManager::LoadNextItem();
+
+		}
+
 		RenderData::PopluateDummyMesh();
 
 		AssetManager::UploadVertexData();

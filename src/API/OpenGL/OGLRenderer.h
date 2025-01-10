@@ -9,4 +9,10 @@ namespace OGLRenderer {
 
 
 	void LoadShaders();
+
+	bool LoadTexture();
+
+
+	// Texture
+
 }
