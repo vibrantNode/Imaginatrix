@@ -4,7 +4,7 @@
 
 
 
-void RenderData::PopluateDummyMesh() {
+void TestData::PopluateDummyMesh() {
     // Define a simple triangle
     std::vector<Vertex> triangleVertices = {
         Vertex({0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}),

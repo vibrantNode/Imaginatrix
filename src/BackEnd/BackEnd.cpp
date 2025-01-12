@@ -2,6 +2,8 @@
 #include "API/OpenGL/OGLBackEnd.h"
 #include "API/OpenGL/OGLRenderer.h"
 #include "Input/Input.h"
+#include "Input/Camera/FPS_Input.h"
+
 #include <iostream>
 #include <string>
 
@@ -29,6 +31,10 @@ namespace BackEnd {
 	int _currentWindowWidth = 0;
 	int _currentWindowHeight = 0;
 
+	// frame
+	float lastTime = 0.0f;
+	float deltaTime = 0.0f;
+
 
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void window_focus_callback(GLFWwindow* window, int focused);
@@ -37,13 +43,11 @@ namespace BackEnd {
 	void Init(API api) {
 		_api = api;
 
-
 		int width = 1000;
 		int height = 1000;
 
 		glfwInit();
 		glfwSetErrorCallback([](int error, const char* description) { std::cout << "GLFW Error (" << std::to_string(error) << "): " << description << "\n"; });
-
 
 		if (GetAPI() == API::OPENGL) {
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -57,7 +61,6 @@ namespace BackEnd {
 		}
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
-
 		// Resolution and window size
 		_monitor = glfwGetPrimaryMonitor();
 		_mode = glfwGetVideoMode(_monitor);
@@ -82,20 +85,16 @@ namespace BackEnd {
 			OGLBackEnd::Init();
 			glViewport(0, 0, width, height);
 		}
-
-		glfwShowWindow(BackEnd::GetWindowPointer());
-
-		// Init sub systems
-
-		Input::Init();
-
 		// Init API specific
-	
 		if (GetAPI() == API::OPENGL) {
 			OGLRenderer::Init();
-			
 		}
-		
+	
+		// Init sub systems
+		Input::Init();
+		FPS_Input::Init();
+
+		glfwShowWindow(BackEnd::GetWindowPointer());
 		
 	}
 
@@ -104,6 +103,8 @@ namespace BackEnd {
 		glfwPollEvents();
 	
 	}
+
+
 
 	void EndFrame() {
 		// OpenGL
@@ -117,16 +118,19 @@ namespace BackEnd {
 
 	}
 
+	
+
 	void UpdateSubSystems() {
-		Input::Update();
-		//Audio::Update();
-		//Scene::Update();
+
+		Input::Update(); // Update input states
 	}
 
+
 	void CleanUp() {
-		
+
 		glfwTerminate();
 	}
+
 
 
 	void CreateGLFWWindow(const WindowedMode& windowedMode) {
@@ -200,9 +204,6 @@ namespace BackEnd {
 
 	}
 
-
-	
-
 	void SetAPI(API api) {
 		_api = api;
 	}
@@ -251,6 +252,7 @@ namespace BackEnd {
 	int GetCurrentWindowHeight() {
 		return _currentWindowHeight;
 	}
+	
 	void framebuffer_size_callback(GLFWwindow* /*window*/, int width, int height) {
 		if (GetAPI() == API::OPENGL) {
 			glViewport(0, 0, width, height);

@@ -44,9 +44,19 @@ add_executable(Continuum
 
 	# Core
 	src/Core/AssetManager.cpp
+	src/Core/Camera.cpp
+
 
 	# Input
 	src/Input/Input.cpp
+	src/Input/Camera/FPS_Input.cpp
+
+	# Game
+	src/Game/Game.cpp 
+	src/Game/Player.cpp
+	src/Game/Scene.cpp
+
+ 
 
 )
 

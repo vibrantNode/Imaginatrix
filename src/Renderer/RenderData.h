@@ -1,9 +1,16 @@
 #pragma once
+#include "IMCommon/RendererCommon.h"
 
 
-
-namespace RenderData {
+namespace TestData {
 
 
 	void PopluateDummyMesh();
+
+
+	
+	
 }
+struct RenderData {
+	CameraData cameraData[1];
+};

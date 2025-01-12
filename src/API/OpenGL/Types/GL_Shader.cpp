@@ -1,6 +1,7 @@
 #include "GL_Shader.h"
 #include "IMCommon/RendererCommon.h"
-
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp> // for glm::value_ptr
 #include <glad/glad.h>
 #include <string>
 #include <iostream>
@@ -71,6 +72,13 @@ void Shader::Load(std::string vertexPath, std::string fragmentPath) {
     }
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+}
+void Shader::SetUniformMat4(const std::string& name, const glm::mat4& matrix)const {
+    int location = glGetUniformLocation(m_ID, name.c_str());
+    if (location == -1) {
+        std::cerr << "Warning: Uniform '" << name << "' doesn't exist or is not used in the shader." << std::endl;
+    }
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 void Shader::Bind() const {

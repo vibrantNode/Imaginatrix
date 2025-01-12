@@ -9,6 +9,8 @@ public:
 
 	
 	void Bind() const;
+
+	void SetUniformMat4(const std::string& name, const glm::mat4& matrix) const;
 private:
 	int m_ID;
 

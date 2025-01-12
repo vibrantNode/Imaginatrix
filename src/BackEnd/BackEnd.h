@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <string>
+#include <Input/Input.h>
+#include <memory>	
+#include "Core/Camera.h"
 
 
 namespace BackEnd {
@@ -39,6 +42,8 @@ namespace BackEnd {
 	int GetCurrentWindowWidth();
 
 	int GetCurrentWindowHeight();
+
+
 
 
 

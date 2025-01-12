@@ -1,73 +1,61 @@
 #include "Input.h"
+#include <iostream>
+#include <glm/glm.hpp>
 #include "BackEnd/BackEnd.h"
+#include "Core/Camera.h"
 
 
 namespace Input {
 
     bool _keyPressed[372];
     bool _keyDown[372];
+    bool _keyDownLastFrame[372];
     double _mouseX = 0;
     double _mouseY = 0;
     double _mouseOffsetX = 0;
     double _mouseOffsetY = 0;
-	GLFWwindow* _window;
 
-    //void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    // Initialize static variables
+    GLFWwindow* _window = nullptr; // Linked to the GLFW window
+    glm::vec2 lastMousePosition(0.0f, 0.0f);
+    glm::vec2 mouseDelta(0.0f, 0.0f);
 
+    // Initialization function
     void Init() {
-        double x, y;
+
         _window = BackEnd::GetWindowPointer();
-        //glfwSetScrollCallback(_window, scroll_callback);
-        glfwGetCursorPos(_window, &x, &y);
-        //DisableCursor();
-        _mouseOffsetX = x;
-        _mouseOffsetY = y;
-        _mouseX = x;
-        _mouseY = y;
-     
-    }
-
-
-
-    void Update() {
-
-        if (KeyPressed(IM_KEY_ESCAPE)) {
-            BackEnd::ForceCloseWindow();
+        if (!_window) {
+            std::cerr << "Input::Init() - GLFW window not set. Call SetGLFWWindow() first." << std::endl;
         }
-        // Mouse
-        double x, y;
-        glfwGetCursorPos(_window, &x, &y);
     }
 
 
-    int GetMouseX() {
-        return (int)_mouseX;
+    // Update function (can be extended to handle frame-specific tasks)
+    void Update() {
+        if (!_window) {
+            std::cerr << "Input::Update() - GLFW window not set. Call SetGLFWWindow() first." << std::endl;
+            return;
+        }
+
     }
 
-    int GetMouseY() {
-        return (int)_mouseY;
+    // Set the GLFW window and configure callbacks
+    void SetGLFWWindow(GLFWwindow* window) {
+        _window = window;
+    }
+
+
+
+    // Check if a specific key is pressed
+    bool IsKeyPressed(int key) {
+        if (!_window) {
+            std::cerr << "Input::IsKeyPressed() - GLFW window not set. Call SetGLFWWindow() first." << std::endl;
+            return false;
+        }
+        return glfwGetKey(_window, key) == GLFW_PRESS;
     }
 
     bool KeyPressed(unsigned int keycode) {
         return _keyPressed[keycode];
-    }
-
-    float GetMouseOffsetX() {
-        return (float)_mouseOffsetX;
-    }
-
-    float GetMouseOffsetY() {
-        return (float)_mouseOffsetY;
-    }
-    void DisableCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-
-    void HideCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    }
-
-    void ShowCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 }
