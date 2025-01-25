@@ -15,4 +15,7 @@ namespace Game {
 
     Player* GetPlayerByIndex(unsigned int index);
     void SetPlayerKeyboardAndMouseIndex(int playerIndex, int keyboardIndex, int mouseIndex);
+
+    // Getters
+    float GetTime();
 }

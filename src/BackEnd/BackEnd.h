@@ -9,6 +9,9 @@
 
 
 namespace BackEnd {
+
+
+
 	
 	// Core
 	void Init(API api);
@@ -21,8 +24,12 @@ namespace BackEnd {
 	void SetAPI(API api);
 	const API GetAPI();
 
-	// Window
+
+
 	GLFWwindow* GetWindowPointer();
+
+	void SetWindowPointer(GLFWwindow* window);
+	
 	void CreateGLFWWindow(const WindowedMode& windowedMode);
 	bool WindowIsOpen();
 	void SetWindowIcon(GLFWwindow* window, const std::string& iconPath);
@@ -44,7 +51,10 @@ namespace BackEnd {
 	int GetCurrentWindowHeight();
 
 
+	void ProcessInput(float deltaTime);
 
+
+	Camera& GetCamera();
 
 
 }

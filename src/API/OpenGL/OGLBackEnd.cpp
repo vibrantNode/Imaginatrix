@@ -79,6 +79,10 @@ void OGLBackEnd::UploadVertexData(std::vector<Vertex>& vertices, std::vector<uin
     glBindVertexArray(0);
 }
 
+void OGLBackEnd::HandleFrameBufferResized()
+{
+}
+
 
 GLenum glCheckError_(const char* file, int line) {
     GLenum errorCode;

@@ -12,6 +12,7 @@ namespace Game {
     double _deltaTimeAccumulator = 0.0;
     double _fixedDeltaTime = 1.0 / 60.0;
     std::vector<Player> g_players;
+    Camera g_camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
     bool g_firstFrame = true;
     double g_lastFrame = 0;
@@ -27,7 +28,9 @@ namespace Game {
         g_firstFrame = true;
 
  
-        CreatePlayers(1);
+        CreatePlayers(2);
+
+        Scene::Init();
 
         std::cout << "Game::Create() succeeded\n";
     }
@@ -52,24 +55,18 @@ namespace Game {
         g_time += deltaTime;
 
         // Update input handling
-        FPS_Input::Update();
+   
 
         // Update players
         for (Player& player : g_players) {
-            player.Update(deltaTime);
+            player.Update(g_camera, deltaTime);
         }
-        FPS_Input::ResetMouseOffsets();
+      
 
         Scene::Update(deltaTime);
 
-        // Process window resizing or input state
-        //Input::ProcessWindowInput();
 
-
-        // Handle game restart or other actions
-        if (Input::KeyPressed(GLFW_KEY_R)) {
-            //RestartGame();
-        }
+    
     }
 
     void CreatePlayers(unsigned int playerCount) {
@@ -80,15 +77,10 @@ namespace Game {
             Game::g_players.push_back(Player(i));
         }
 
-        SetPlayerKeyboardAndMouseIndex(0, 0, 0);
+       
     }
 
-    void SetPlayerKeyboardAndMouseIndex(int playerIndex, int keyboardIndex, int mouseIndex) {
-        if (playerIndex >= 0 && playerIndex < Game::GetPlayerCount()) {
-            g_players[playerIndex].SetKeyboardIndex(keyboardIndex);
-            g_players[playerIndex].SetMouseIndex(mouseIndex);
-        }
-    }
+ 
 
     Player* GetPlayerByIndex(unsigned int index) {
         if (index >= 0 && index < g_players.size()) {
@@ -106,5 +98,8 @@ namespace Game {
         return g_players.size();
     }
 
+    float GetTime() {
+        return g_time;
+    }
   
 }

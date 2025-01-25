@@ -1,15 +1,17 @@
 #include "BackEnd.h"
 #include "API/OpenGL/OGLBackEnd.h"
 #include "API/OpenGL/OGLRenderer.h"
+#include "API/Vulkan/VkRenderer.h"
+#include "API/Vulkan/VkBackEnd.h"
 #include "Input/Input.h"
 #include "Input/Camera/FPS_Input.h"
-
+#include "Core/Camera.h"
 #include <iostream>
 #include <string>
 
 
 #include "GLFW/glfw3.h"
-#define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
 
 
@@ -31,20 +33,37 @@ namespace BackEnd {
 	int _currentWindowWidth = 0;
 	int _currentWindowHeight = 0;
 
+
+
+
+
 	// frame
 	float lastTime = 0.0f;
 	float deltaTime = 0.0f;
+
+
+	Camera g_camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
 
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void window_focus_callback(GLFWwindow* window, int focused);
 
 
+	// Getters
+ 
+	GLFWwindow* GetWindowPointer() {
+		return _window;
+	}
+
+
 	void Init(API api) {
 		_api = api;
 
-		int width = 1000;
-		int height = 1000;
+		if (GetAPI() == API::VULKAN) {
+			//VKBackEnd::CreateVulkanInstance();
+		}
+
+	
 
 		glfwInit();
 		glfwSetErrorCallback([](int error, const char* description) { std::cout << "GLFW Error (" << std::to_string(error) << "): " << description << "\n"; });
@@ -68,6 +87,11 @@ namespace BackEnd {
 		glfwWindowHint(GLFW_GREEN_BITS, _mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, _mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, _mode->refreshRate);
+
+
+		int width = 1920;
+		int height = 1080;
+
 		_fullscreenWidth = _mode->width;
 		_fullscreenHeight = _mode->height;
 		_windowedWidth = width;
@@ -87,16 +111,30 @@ namespace BackEnd {
 		}
 		// Init API specific
 		if (GetAPI() == API::OPENGL) {
+			
 			OGLRenderer::Init();
 		}
-	
+		else if(GetAPI() == API::VULKAN) {
+			//VKBackEnd::Init();
+		}
 		// Init sub systems
 		Input::Init();
-		FPS_Input::Init();
+		Input::SetGLFWWindow(_window);
+
+
+		// Set up mouse callback and user pointer
+		glfwSetCursorPosCallback(_window, Input::MouseCallback);
+
+		// Disable cursor and set raw mouse motion
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		if (glfwRawMouseMotionSupported())
+			glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
 		glfwShowWindow(BackEnd::GetWindowPointer());
 		
 	}
+
+ 
 
 	void BeginFrame() {
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -121,7 +159,23 @@ namespace BackEnd {
 	
 
 	void UpdateSubSystems() {
+		float currentTime = static_cast<float>(glfwGetTime());
+		deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
 
+		// change paramters to either take in a window pointer or whatever it wants to function
+		ProcessInput(deltaTime);
+
+		double xpos, ypos;
+		glfwGetCursorPos(_window, &xpos, &ypos);
+		static double lastX = xpos, lastY = ypos;
+
+		float xoffset = static_cast<float>(xpos - lastX);
+		float yoffset = static_cast<float>(lastY - ypos);
+		lastX = xpos;
+		lastY = ypos;
+
+		g_camera.ProcessMouseMovement(xoffset, yoffset);
 		Input::Update(); // Update input states
 	}
 
@@ -199,7 +253,7 @@ namespace BackEnd {
 			SetWindowedMode(WindowedMode::WINDOWED);
 		}
 		if (GetAPI() == API::OPENGL) {
-			//OpenGLBackEnd::HandleFrameBufferResized();
+			OGLBackEnd::HandleFrameBufferResized();
 		}
 
 	}
@@ -212,11 +266,11 @@ namespace BackEnd {
 		return _api;
 	}
 
-	// Window
-	GLFWwindow* GetWindowPointer() {
-		return _window;
-	}
 
+
+	void SetWindowPointer(GLFWwindow* window) {
+		_window = window;
+	}
 	bool WindowIsOpen() {
 		return !(glfwWindowShouldClose(_window) || _forceCloseWindow);
 	}
@@ -251,6 +305,30 @@ namespace BackEnd {
 
 	int GetCurrentWindowHeight() {
 		return _currentWindowHeight;
+	}
+
+	void ProcessInput(float deltaTime)
+	{
+		if (Input::IsKeyPressed(GLFW_KEY_W)) {
+			g_camera.ProcessKeyboard(CameraMovement::FORWARD, deltaTime);
+			
+		}
+		if (Input::IsKeyPressed(GLFW_KEY_S)) {
+			g_camera.ProcessKeyboard(CameraMovement::BACKWARD, deltaTime);
+			
+		}
+		if (Input::IsKeyPressed(GLFW_KEY_A)) {
+			g_camera.ProcessKeyboard(CameraMovement::LEFT, deltaTime);
+			
+		}
+		if (Input::IsKeyPressed(GLFW_KEY_D)) {
+			g_camera.ProcessKeyboard(CameraMovement::RIGHT, deltaTime);
+		}
+	}
+
+	Camera& GetCamera()
+	{
+		return g_camera;
 	}
 	
 	void framebuffer_size_callback(GLFWwindow* /*window*/, int width, int height) {

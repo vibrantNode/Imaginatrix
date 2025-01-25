@@ -17,6 +17,8 @@ namespace Input {
 
     // Initialize static variables
     GLFWwindow* _window = nullptr; // Linked to the GLFW window
+    Camera _camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+
     glm::vec2 lastMousePosition(0.0f, 0.0f);
     glm::vec2 mouseDelta(0.0f, 0.0f);
 
@@ -57,5 +59,18 @@ namespace Input {
 
     bool KeyPressed(unsigned int keycode) {
         return _keyPressed[keycode];
+    }
+
+
+
+    void MouseCallback(GLFWwindow* window, double xpos, double ypos) {
+        // Get mouse offset
+        double xoffset = xpos - _mouseX;
+        double yoffset = _mouseY - ypos;  // Inverted Y-axis to match OpenGL's coordinate system
+
+        _mouseX = xpos;
+        _mouseY = ypos;
+
+        _camera.ProcessMouseMovement(static_cast<float>(xoffset), static_cast<float>(yoffset));
     }
 }

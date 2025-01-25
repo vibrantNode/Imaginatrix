@@ -5,6 +5,8 @@
 #include "Renderer/Types/Mesh.h"
 
 #include <iostream>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 namespace AssetManager {
@@ -23,6 +25,7 @@ namespace AssetManager {
     // Data inserts for vectors above
     int _nextVertexInsert = 0;
     int _nextIndexInsert = 0;
+
 
 
     struct CompletedLoadingTasks {
@@ -51,6 +54,14 @@ void AssetManager::LoadNextItem() {
 
 bool AssetManager::LoadingComplete() {
     return g_completedLoadingTasks.g_all;
+}
+
+void AssetManager::FindAssetPaths()
+{
+    // Models
+    //for (FileInfo& fileInfo : Util::IterateDirectory("res/assets/models/")) {
+    //    g_models.emplace_back(fileInfo.name);
+    //}
 }
 
 bool AssetManager::LoadTextures() {

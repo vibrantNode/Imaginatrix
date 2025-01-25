@@ -13,7 +13,7 @@ namespace AssetManager {
 
 	bool LoadingComplete();
 
-
+	void FindAssetPaths();
 	// Getters
 	int GetMeshIndexByName(const std::string& name);
 	Mesh* GetMeshByIndex(int index);

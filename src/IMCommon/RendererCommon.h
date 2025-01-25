@@ -35,28 +35,27 @@ struct Vertex {
         : position(_position), color(_color) {
     }
 };
-struct CameraData {
 
-    glm::mat4 projection = glm::mat4(1);
-    glm::mat4 projectionInverse = glm::mat4(1);
-    glm::mat4 view = glm::mat4(1);
-    glm::mat4 viewInverse = glm::mat4(1);
-
-    float viewportWidth = 0;
-    float viewportHeight = 0;
-    float viewportOffsetX = 0;
-    float viewportOffsetY = 0;
-
-    float clipSpaceXMin;
-    float clipSpaceXMax;
-    float clipSpaceYMin;
-    float clipSpaceYMax;
-
-    float contrast;
-    float colorMultiplierR;
-    float colorMultiplierG;
-    float colorMultiplierB;
+struct Transform {
+    glm::vec3 position = glm::vec3(0);
+    glm::vec3 rotation = glm::vec3(0);
+    glm::vec3 scale = glm::vec3(1);
+    glm::mat4 to_mat4() {
+        glm::mat4 m = glm::translate(glm::mat4(1), position);
+        m *= glm::mat4_cast(glm::quat(rotation));
+        m = glm::scale(m, scale);
+        return m;
+    };
+    glm::vec3 to_forward_vector() {
+        glm::quat q = glm::quat(rotation);
+        return glm::normalize(q * glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    glm::vec3 to_right_vector() {
+        glm::quat q = glm::quat(rotation);
+        return glm::normalize(q * glm::vec3(1.0f, 0.0f, 0.0f));
+    }
 };
+ 
 struct ViewportInfo {
     int width = 0;
     int height = 0;

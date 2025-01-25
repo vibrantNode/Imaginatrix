@@ -1,27 +1,29 @@
 #include "OGLRenderer.h"
 #include "OGLBackEnd.h"
+#include "BackEnd/BackEnd.h"
 #include "Renderer/Types/Mesh.h"
 #include "Core/AssetManager.h"
 #include "Core/Camera.h"
 #include "Types/GL_Shader.h"
 #include "Types/GL_Texture.h"
+#include "IMCommon/RendererCommon.h"
 #include <iostream>
 
 
 /*
 TASK LIST:
 
- The main render function should handle rendering other abstracted render functions for other objects 
+Implement a tranform class / struct
 
 */
 
 namespace OGLRenderer {
 
-    Camera g_camera(glm::vec3(0.0f, 0.0f, 5.0f), -90.0f, 0.0f);
-
+   
 
 	struct Shaders {
 		Shader _defaultShader;
+        Shader _skyboxShader;
 
 	}g_shaders;
 
@@ -39,28 +41,36 @@ void OGLRenderer::Render() {
 
     g_shaders._defaultShader.Bind();
 
-    glm::mat4 view = g_camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(
-        glm::radians(g_camera.GetZoom()),
-        800.0f / 600.0f, // Aspect ratio (width/height)
-        0.1f, 100.0f     // Near and far planes
-    );
+    // Set up matrices
+    int width, height;
+    glfwGetFramebufferSize(BackEnd::GetWindowPointer(), &width, &height);
+    glm::mat4 projection = glm::perspective(glm::radians(BackEnd::GetCamera().GetZoom()), (float)width / height, 0.1f, 100.0f);
+    glm::mat4 view = BackEnd::GetCamera().GetViewMatrix();
 
     g_shaders._defaultShader.SetUniformMat4("view", view);
     g_shaders._defaultShader.SetUniformMat4("projection", projection);
 
 
+    // Use Transform struct for model transformation
+    Transform objTransform;
+    objTransform.position = glm::vec3(0.0f, 0.0f, 0.0f); // Set position
+    objTransform.rotation = glm::vec3(glm::radians(90.0f), 0.0f, 0.0f); // Set rotation (90 degrees around X-axis)
+    objTransform.scale = glm::vec3(19.0f, 12.0f, 11.0f); // Set scale
+
+
+    // Generate model matrix
+    glm::mat4 model = objTransform.to_mat4();
+    
+    g_shaders._defaultShader.SetUniformMat4("model", model);
 
     // Bind the texture
     if (!AssetManager::g_textures.empty()) {
         AssetManager::g_textures[1].Bind(1); // Bind the first texture to slot 1
     }
 
-
     glBindVertexArray(OGLBackEnd::GetVertexDataVAO());
 
-
-    // Test
+    // Test pass of generic mesh
     Mesh* mesh = AssetManager::GetMeshByIndex(1); // Get the mesh by index
     if (mesh) { // Check if the mesh was found (nullptr check)
         glDrawElementsBaseVertex(
@@ -83,4 +93,5 @@ void OGLRenderer::LoadShaders() {
 
 
 	g_shaders._defaultShader.Load("default.vert", "default.frag");
+    g_shaders._skyboxShader.Load("skybox.vert", "skybox.frag");
 }

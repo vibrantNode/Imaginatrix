@@ -7,10 +7,6 @@ namespace TestData {
 
 	void PopluateDummyMesh();
 
-
-	
-	
+ 
 }
-struct RenderData {
-	CameraData cameraData[1];
-};
+ 
